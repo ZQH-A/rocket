@@ -4,7 +4,7 @@
 
 namespace rocket{
     static int g_pid = 0;
-    static thread_local int g_thread_id = 0;
+    static thread_local int g_thread_id = 0; //线程局部变量
 
     pid_t getPid() //获取进程号
     {

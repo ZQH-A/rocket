@@ -105,7 +105,7 @@ namespace rocket{
     void Logger::log()
     {
         ScopeMutext<Mutex> lock(m_mutex);
-        std::queue<std::string> temp = m_buffer;
+        std::queue<std::string> temp;
         m_buffer.swap(temp);
         lock.unlock();
 

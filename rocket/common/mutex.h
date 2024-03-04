@@ -7,9 +7,10 @@
 //用于防止多线程同时访问一个变量导致出现问题
 namespace rocket{
 
+    //模板类
     template <class T>
-    class ScopeMutext {
-
+    class ScopeMutext {  //使用ScopeMutext是为了防止在使用Mutex加锁后忘记解锁
+    //而使用类，可以在类的析构函数中对Mutex进行解锁。
         public:
 
         ScopeMutext(T& mutex) : m_mutex(mutex)
@@ -45,9 +46,10 @@ namespace rocket{
         bool m_is_lock {false};
     };
 
-    class Mutex{
+    class Mutex{ //封装了一个互斥锁
         public:
         Mutex(){
+            //对互斥锁进行初始化
             pthread_mutex_init(&m_mutex,NULL);
         }
 
@@ -57,11 +59,12 @@ namespace rocket{
         }
 
         void lock()
-        {
+        { //获取锁
             pthread_mutex_lock(&m_mutex);
         }
 
         void unlock(){
+            //释放锁
             pthread_mutex_unlock(&m_mutex);
         }
         private:
