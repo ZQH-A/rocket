@@ -49,6 +49,7 @@ namespace rocket{
         //让IO线程等待，直到我们主动启动
         DEBUGLOG("IOThread %d created, wait start semphore",thread->m_thread_id);
 
+        //让IO线程等待，直到我们主动启动 为什么要在循环前阻塞？  回答：因为要向eventloop对象中添加 timerfd 和 网络套接字，所以需要先将套接字添加进去后在调用start主动唤醒新线程执行循环
         sem_wait(&thread->m_start_semaphore);
         DEBUGLOG("IOThread %d start loop",thread->m_thread_id);
 

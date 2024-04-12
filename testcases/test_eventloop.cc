@@ -10,6 +10,7 @@
 #include "rocket/net/timer_event.h"
 #include <memory>
 #include "rocket/net/io_thread.h"
+#include "rocket/net/io_thread_group.h"
 
 
 void test_to_thread()
@@ -62,13 +63,29 @@ void test_to_thread()
         INFOLOG("trigger timer event,count=%d",i++);
     });
 
+    //测试 IOThread
+    // rocket::IOThread io_thread;
 
-    rocket::IOThread io_thread;
+    // io_thread.getEventLoop()->addEpollEvent(&event);
+    // io_thread.getEventLoop()->addTimerEvent(timer_event);
+    // io_thread.start();
+    // io_thread.join();
 
-    io_thread.getEventLoop()->addEpollEvent(&event);
-    io_thread.getEventLoop()->addTimerEvent(timer_event);
-    io_thread.start();
-    io_thread.join();
+    //测试 IOThreadGroup
+
+    rocket::IOThreadGroup io_thread_group(2);
+
+    rocket::IOThread* io_thread = io_thread_group.getIOThread();
+    io_thread->getEventLoop()->addEpollEvent(&event);
+    io_thread->getEventLoop()->addTimerEvent(timer_event);
+
+    rocket::IOThread* io_thread2 = io_thread_group.getIOThread();
+    io_thread2->getEventLoop()->addTimerEvent(timer_event);
+
+    io_thread_group.start();
+
+    io_thread_group.join();
+
 }
 int main()
 {
