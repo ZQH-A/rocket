@@ -15,7 +15,7 @@ namespace rocket{
 
     }
 
-    void WakeUpFdEvent::wakeup()  //唤醒则向akeup中写数字
+    void WakeUpFdEvent::wakeup()  //唤醒则向Wakeup中写数字
     {
         char buf[8] = {'a'};
         int rt = write(m_fd, buf, 8);

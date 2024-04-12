@@ -8,6 +8,8 @@
 namespace rocket{
     pid_t getPid(); //获取进程号
     pid_t getThreadId(); //获取线程号
+
+    int64_t getNowMs(); //获取当前时间的毫秒数
 }
 
 

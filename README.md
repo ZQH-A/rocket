@@ -54,3 +54,52 @@ obj ： 编译过程中的产生物
 rocket:     common 公共的类目录
             net: 网络库
 
+### 2. Eventloop模块开发
+在rocket里面，使用的是主从reactor模型，
+服务区有一个manReactor和多个subReactor.
+mainReactor由主线程运行，他作用如下：通过epoll监听listenfd的可读事件，当可读事件发生后，调用accept函数获取clientfd,然后随机取出一个subReactor,将clientfd的读写事件注册到这个subReactor的epoll上即可，也就是说，mainReactor只负责建立连接事件，不进行业务处理，也不关心已连接套接字的IO事件。
+
+subReactor通常有多个，每个subReactor由一个线程来运行，subReactor的epoll中注册了clientfd的读写事件，当发生IO事件后，需要进行业务处理。
+
+
+
+### 3. TimerEvent 定时任务
+
+```
+1.指定时间点 arrive_time (是一个时间搓)
+2.interval, ms (间隔，在多少秒后执行这个任务)
+3.is_repeated (是否重复)
+4.is_cancled (是否取消)
+5.task (定时的任务)
+
+cancle()
+cancleRepeated() 取消重复
+
+```
+
+#### 3.1.1 Timer
+定时器，他是一个TimerEvent的集合
+Timer继承 FdEvent
+
+addTimerEvent();
+deleteTimerEvent();
+onTimer(); //当发生了IO事件之后，需要执行的方法
+
+reserArriveTime();
+
+multimap 存储 TimerEvent <key(arrivetime),TimerEvent>
+```
+```
+#### 3.2 IO 线程
+创建一个IO线程，他会帮我们执行：
+1.创建一个新线程（pthread_create）
+2.在新线程里面创建一个EventLoop,完成初始化
+3.开启loop
+
+```
+class {
+    pthread_t m_thread;
+    pid_t m_thrad_id;
+    EventLoop event_loop;
+}
+```

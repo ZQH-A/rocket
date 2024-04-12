@@ -11,6 +11,8 @@
 #include "rocket/common/mutex.h"
 #include "rocket/net/fd_event.h"
 #include "rocket/net/wakeup_fd_event.h"
+#include "rocket/net/timer.h"
+#include "rocket/net/timer_event.h"
 
 namespace rocket{
 
@@ -31,10 +33,12 @@ namespace rocket{
             bool isInLoopThread(); //判断是否是当前线程添加和删除，如果是其他线程的话要加锁
 
             void addTask(std::function<void()> cb, bool is_wake_up = false); //把任务添加到 类里面
+            void addTimerEvent(TimerEvent::s_ptr event);
         private:
 
             void dealWakeup();
             void initWakeUpFdEvent();
+            void initTimer();
         private:
 
             pid_t m_thread_id; //当前线程号
@@ -47,6 +51,8 @@ namespace rocket{
             std::queue<std::function<void()>> m_pending_tasks; //所有待执行的任务队列
 
             Mutex m_mutex; //封装的一个互斥锁
+
+            Timer* m_timer {NULL};
     };
 
 }

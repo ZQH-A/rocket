@@ -16,6 +16,8 @@ namespace rocket{
 
         FdEvent(int fd);
 
+        FdEvent();
+
         ~FdEvent();
 
         std::function<void()> hander(TriggerEvent event_type);

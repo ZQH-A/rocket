@@ -65,8 +65,10 @@ namespace rocket{
             ERRORLOG("failed to create event loop, epool_create error, error info [%d]",errno);
             exit(0);
         }
-
+        //初始化Wakeupfd
         initWakeUpFdEvent();
+        //初始化定时器fd
+        initTimer();
 
         INFOLOG("success create eventloop in thread %d",m_thread_id);
         t_current_eventloop = this;
@@ -79,15 +81,21 @@ namespace rocket{
             delete m_wakeup_fd_event;
             m_wakeup_fd_event = nullptr;
         }
+
+        if(m_timer)
+        {
+            delete m_timer;
+            m_timer = NULL;
+        }
     }
 
     void EventLoop::initWakeUpFdEvent()
     {
         //当有事件来临时，就会马上唤醒处理epoll_wait
-        m_wakeup_fd_event = new WakeUpFdEvent((0, EFD_NONBLOCK));   //专门用于事件通知的文件描述符
-        if(m_wakeup_fd_event < 0)
+        m_wakeup_fd = eventfd(0, EFD_NONBLOCK);   //专门用于事件通知的文件描述符
+        if(m_wakeup_fd < 0)
         {
-            ERRORLOG("failed to create event loop, eventfd create error, error info [%d]",errno);
+            ERRORLOG("failed to create wakeupfd, eventfd create error, error info [%d]",errno);
             exit(0);
         }
         m_wakeup_fd_event = new WakeUpFdEvent(m_wakeup_fd);
@@ -100,6 +108,17 @@ namespace rocket{
         );
         addEpollEvent(m_wakeup_fd_event);  //将wakeupfd上树
     } 
+
+    void EventLoop::initTimer()  //初始化Timer
+    {
+        m_timer = new Timer();
+        addEpollEvent(m_timer);
+    }
+
+    void EventLoop::addTimerEvent(TimerEvent::s_ptr event)
+    {
+        m_timer->addTimerEvent(event);
+    }
 
     void EventLoop::loop()  //核心函数
     {
@@ -120,6 +139,11 @@ namespace rocket{
                     cb();
                 }
              }
+
+             //如果由定时任务需要执行，那么执行
+             //1.怎么判断是否需要执行
+             //2.怎么去监听
+            
 
              int timeout = g_epoll_max_timeout;
              epoll_event result_events[g_epoll_max_events]; //套接字数组
@@ -214,7 +238,7 @@ namespace rocket{
 
 
     void EventLoop::addTask(std::function<void()> cb,bool is_wake_up /*false*/) //把任务添加到 任务队列里面
-    {
+    {  //is_wake_up 默认是false
         ScopeMutext<Mutex> lock(m_mutex);
         m_pending_tasks.push(cb);
         lock.unlock();
