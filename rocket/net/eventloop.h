@@ -34,6 +34,9 @@ namespace rocket{
 
             void addTask(std::function<void()> cb, bool is_wake_up = false); //把任务添加到 类里面
             void addTimerEvent(TimerEvent::s_ptr event);
+
+        public: 
+            static EventLoop* GetGurrentEventLoop(); //获取当前线程的eventloop对象
         private:
 
             void dealWakeup();

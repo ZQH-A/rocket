@@ -66,11 +66,17 @@ namespace rocket{
                 ERRORLOG("accept error, errno = %d, error = %s",errno,strerror(errno));
             }
             IPNetAddr peer_addr(client_addr);
-            INFOLOG("A client have accepted success, peer addr [%s]",peer_addr.toString());
+            INFOLOG("A client have accepted success, peer addr [%s]",peer_addr.toString().c_str());
 
             return client_fd;
         }else{ //IPV6 或者其他的网络地址
             //.....  
+            return 0;
         }
+    }
+
+    int TcpAcceptor::getListenFd()
+    {
+        return m_listenfd;
     }
 }
