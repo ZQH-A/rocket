@@ -13,7 +13,7 @@ namespace rocket{
             TcpAcceptor(NetAddr::s_ptr local_addr);
             ~TcpAcceptor();
 
-            int accept(); //连接
+            std::pair<int,NetAddr::s_ptr> accept(); //连接
 
             int getListenFd();
         private:

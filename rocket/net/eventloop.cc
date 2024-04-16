@@ -21,6 +21,7 @@
         { \
             ERRORLOG("failed epoll_ctl when add fd, errno=%d, error info [%s]",errno,strerror(errno)); \
         } \
+        m_listen_fds.insert(event->getFd()); \
         DEBUGLOG("add event sucess, fd [%d]",event->getFd()); \
 
 //下树 //没找到 直接返回 //找到了删除
@@ -37,6 +38,7 @@
         { \
             ERRORLOG("failed epoll_ctl when delete fd, errno=%d, error info [%s]",errno,strerror(errno)); \
         } \
+        m_listen_fds.erase(event->getFd()); \
         DEBUGLOG("delete event sucess,fd[%d]",event->getFd()); \
 
 

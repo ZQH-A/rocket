@@ -5,6 +5,8 @@
 #include "rocket/net/tcp/net_addr.h"
 #include "rocket/net/eventloop.h"
 #include "rocket/net/io_thread_group.h"
+#include "rocket/net/tcp/tcp_connection.h"
+#include <set>
 
 namespace rocket{
     class TcpServer
@@ -20,6 +22,8 @@ namespace rocket{
         FdEvent* m_listen_fd_event; //监听套接字
 
         int m_client_counts {0}; //当前连接的数量
+
+        std::set<TcpConnection::s_ptr> m_client;
     public:
         TcpServer(NetAddr::s_ptr local_addr);
         ~TcpServer();

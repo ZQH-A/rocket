@@ -2,6 +2,7 @@
 #define ROCKET_NET_TCP_TCP_BUFFER_H
 
 #include <vector>
+#include <memory>
 
 namespace rocket{
 
@@ -11,9 +12,12 @@ namespace rocket{
         int m_read_index {0}; //读索引
         int m_write_index {0}; //写索引
         int m_size {0}; //容量大小
-
+    public:
         std::vector<char> m_buffer; //
     public:
+
+        typedef std::shared_ptr<TcpBuffer> s_ptr; //智能指针
+
         TcpBuffer(int size);
         ~TcpBuffer();
 

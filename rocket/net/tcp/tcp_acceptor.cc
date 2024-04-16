@@ -51,7 +51,7 @@ namespace rocket{
 
     }
 
-    int TcpAcceptor::accept() //连接
+    std::pair<int,NetAddr::s_ptr> TcpAcceptor::accept() //连接
     {
         if(m_family == AF_INET)
         {
@@ -65,13 +65,13 @@ namespace rocket{
             {
                 ERRORLOG("accept error, errno = %d, error = %s",errno,strerror(errno));
             }
-            IPNetAddr peer_addr(client_addr);
-            INFOLOG("A client have accepted success, peer addr [%s]",peer_addr.toString().c_str());
+            IPNetAddr::s_ptr peer_addr = std::make_shared<IPNetAddr>(client_addr);
+            INFOLOG("A client have accepted success, peer addr [%s]",peer_addr->toString().c_str());
 
-            return client_fd;
+            return std::make_pair(client_fd,peer_addr);
         }else{ //IPV6 或者其他的网络地址
             //.....  
-            return 0;
+            return std::make_pair(-1,nullptr);
         }
     }
 

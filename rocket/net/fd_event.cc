@@ -1,6 +1,7 @@
 #include "rocket/net/fd_event.h"
 #include "rocket/common/log.h"
 #include <string.h>
+#include <fcntl.h>
 
 
 namespace rocket{
@@ -35,6 +36,7 @@ namespace rocket{
         if(event_type == TriggerEvent::IN_EVENT)
         {
             m_listen_events.events |= EPOLLIN;
+            //m_listen_events.events |= EPOLLET; //边沿触发 自己添加
             m_read_callback = callback;
             m_listen_events.data.ptr = this; //有点印象 
             //将epoll_event中的指针指向整个Fd_event类 里面有读写回调函数
@@ -46,4 +48,25 @@ namespace rocket{
             m_listen_events.data.ptr = this;
         }
     }
+
+     void FdEvent::setNonBlock() //将套接字设置为非阻塞的
+     {
+        int flag = fcntl(m_fd,F_GETFL,0); //获取当前套接字的
+        if(flag & O_NONBLOCK)  //如果已经设置了非阻塞，返回
+        {
+            return;
+        }
+
+        fcntl(m_fd,F_SETFL,flag | O_NONBLOCK); //设置非阻塞
+     }
+
+     void FdEvent::cancle(TriggerEvent event_type) //取消对事件的监听
+     {
+        if(event_type == TriggerEvent::IN_EVENT)
+        {
+            m_listen_events.events &= (~EPOLLIN);
+        }else{
+            m_listen_events.events &= (~EPOLLOUT);
+        }
+     }
 }

@@ -27,6 +27,10 @@ namespace rocket{
         int getFd() const {
             return m_fd;
         }
+        
+        void setNonBlock(); //将套接字设置为非阻塞的
+
+        void cancle(TriggerEvent event_type); //取消对事件的监听
 
         epoll_event getEpollEvent() 
         {

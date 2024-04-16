@@ -103,3 +103,15 @@ class {
     EventLoop event_loop;
 }
 ```
+
+###4.TCP
+TcpConnection: Read:读取客户端发来的数据，组装为RPC请求　　Excute:将RPC请求作为入参，执行业务逻辑得到RPC响应  Write:将RPC响应发送给客户端。
+
+TcpBuffer:
+InBuffer: 1.服务端调用read成功从socket缓冲区读取数据，会写入到InBuffer
+           2. 服务端从InBuffer前面读取数据，进行解码得到请求
+
+OutBuffer:1.服务端向外发送数据，会将数据编码后写入到OutBuffer后面 2.服务端在fd可写的情况下，调用write将OutBuffer里面的数据全部发送出去  
+
+TcpClient：有以下步骤： 1. Connect:连接对端机器 2.Write：将RPC响应发送给客户端  3.读取客户端发来的数据，组装为RPC请求
+非阻塞Connect: 返回0，表示连接成功  返回-1，但errno == EINPROGRESS，表示连接正在建立，此时可以添加到epoll中去监听其可写事件。等待可写事件就绪后，调用getsocketopt获取fd上的错误，其他errno直接报错。

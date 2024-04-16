@@ -1,6 +1,7 @@
 #include "rocket/net/tcp/tcp_server.h"
 #include "rocket/common/log.h"
 #include "rocket/net/eventloop.h"
+#include "rocket/net/tcp/tcp_connection.h"
 
 
 namespace rocket{
@@ -44,11 +45,18 @@ namespace rocket{
 
      void TcpServer::onAccept() //新连接到来时 需要执行
      {
-        int client_fd = m_acceptor->accept();
+        auto re = m_acceptor->accept();
+        int client_fd = re.first;
+        NetAddr::s_ptr peer_addr = re.second;
+
         m_client_counts ++;
 
-        // to do 把 client_fd添加到任意IO线程里面
-
+        // 把 client_fd添加到任意IO线程里面
         INFOLOG("TcpServer success get client, fd =%d",client_fd);
+
+        IOThread* io_thread = m_io_thread_group->getIOThread();
+        TcpConnection::s_ptr connection = std::make_shared<TcpConnection>(io_thread,client_fd,128,peer_addr);
+        connection->setState(Connected);
+        m_client.insert(connection);
      }
 }
