@@ -5,8 +5,8 @@
 
 namespace rocket{
 
-    TcpConnection::TcpConnection(IOThread* io_thread,int fd,int buffer_size,NetAddr::s_ptr peer_addr)
-    : m_io_thread(io_thread), m_peer_addr(peer_addr), m_state(NotConnection),m_fd(fd)
+    TcpConnection::TcpConnection(EventLoop* event_loop,int fd,int buffer_size,NetAddr::s_ptr peer_addr)
+    : m_event_loop(event_loop), m_peer_addr(peer_addr), m_state(NotConnection),m_fd(fd)
     {
         m_in_buffer = std::make_shared<TcpBuffer>(buffer_size);
         m_out_buffer = std::make_shared<TcpBuffer>(buffer_size);
@@ -17,7 +17,7 @@ namespace rocket{
         m_fd_event->setNonBlock(); //设置为非阻塞 
         m_fd_event->listen(FdEvent::IN_EVENT,std::bind(&TcpConnection::onRead,this));
 
-        m_io_thread->getEventLoop()->addEpollEvent(m_fd_event);
+        event_loop->addEpollEvent(m_fd_event);
     }
 
     TcpConnection::~TcpConnection()
@@ -32,9 +32,9 @@ namespace rocket{
         {
             return;
         }
-         m_fd_event->cancle(FdEvent::OUT_EVENT);
-          m_fd_event->cancle(FdEvent::IN_EVENT);
-        m_io_thread->getEventLoop()->deleteEpollEvent(m_fd_event);
+        m_fd_event->cancle(FdEvent::OUT_EVENT);
+        m_fd_event->cancle(FdEvent::IN_EVENT);
+        m_event_loop->deleteEpollEvent(m_fd_event);
         m_state = Closed;
     }
 
@@ -117,7 +117,7 @@ namespace rocket{
         m_out_buffer->writeToBuffer(msg.c_str(),msg.length());
         //绑定写事件
         m_fd_event->listen(FdEvent::OUT_EVENT, std::bind(&TcpConnection::onWrite,this));
-        m_io_thread->getEventLoop()->addEpollEvent(m_fd_event);
+        m_event_loop->addEpollEvent(m_fd_event);
     }
 
     void TcpConnection::onWrite()
@@ -161,7 +161,7 @@ namespace rocket{
         if(is_write_all) //数据全部写完后
         {
             m_fd_event->cancle(FdEvent::OUT_EVENT);  //取消对可写事件的监听
-            m_io_thread->getEventLoop()->addEpollEvent(m_fd_event);
+            m_event_loop->addEpollEvent(m_fd_event);
         }
     }
 
@@ -191,5 +191,10 @@ namespace rocket{
         //当fd发送可读事件，但是可读的数据为0，即 对端发送了FIN报文
         //然后会触发本地的onRead函数，但是可读数据为0，进而触发clear函数，
         ::shutdown(m_fd,SHUT_RDWR);
+    }
+
+    void TcpConnection::setConnectionType(TcpConnectionType type)
+    {
+        m_connection_type = type;
     }
 }

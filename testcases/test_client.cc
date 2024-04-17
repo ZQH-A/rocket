@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include "rocket/net/tcp/tcp_client.h"
 
 void test_connect()
 {
@@ -41,6 +42,16 @@ void test_connect()
     DEBUGLOG("success read %d bytes,[%s]",rt,std::string(buf).c_str());
 } 
 
+void test_tcp_client()
+{
+    rocket::IPNetAddr::s_ptr addr= std::make_shared<rocket::IPNetAddr>("127.0.0.1",12345);
+    rocket::TcpClient client(addr);
+    client.connect([addr]()
+    {
+        DEBUGLOG("connect success, addr = %s",addr->toString().c_str());
+    });
+}
+
 int main()
 {
 
@@ -51,5 +62,5 @@ int main()
 
     
 
-    test_connect();
+    test_tcp_client();
 }

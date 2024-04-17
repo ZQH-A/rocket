@@ -124,6 +124,7 @@ namespace rocket{
 
     void EventLoop::loop()  //核心函数
     {
+        m_is_looping = true;
         while(!m_stop_flag)
         {   //当stop标志是false时，说明loop函数一直在循环，然后需要从任务队列中取任务
             //当有多个线程同时取时，需要考虑互斥
@@ -258,6 +259,11 @@ namespace rocket{
         }
         t_current_eventloop = new EventLoop();
         return t_current_eventloop;
+    }
+
+    bool EventLoop::isLooping()  //判断是否正在循环
+    {
+        return m_is_looping;
     }
 
 }

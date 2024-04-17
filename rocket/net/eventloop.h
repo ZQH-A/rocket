@@ -34,7 +34,7 @@ namespace rocket{
 
             void addTask(std::function<void()> cb, bool is_wake_up = false); //把任务添加到 类里面
             void addTimerEvent(TimerEvent::s_ptr event);
-
+            bool isLooping();  //判断是否正在循环
         public: 
             static EventLoop* GetGurrentEventLoop(); //获取当前线程的eventloop对象
         private:
@@ -56,6 +56,8 @@ namespace rocket{
             Mutex m_mutex; //封装的一个互斥锁
 
             Timer* m_timer {NULL};
+
+            bool m_is_looping {false};
     };
 
 }

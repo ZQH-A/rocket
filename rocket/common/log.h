@@ -28,7 +28,7 @@ std::string  formatString(const char* str, Args&&... args) //第一个参数是�
 #define DEBUGLOG(str, ...) \
     if (rocket::Logger::GetGloballLogger()->getLoglevel() <= rocket::Debug) \
     { \
-        rocket::Logger::GetGloballLogger()->pushLog((new rocket::LogEvent(rocket::LogLevel::Debug))->toString() \
+        rocket::Logger::GetGloballLogger()->pushLog(rocket::LogEvent(rocket::LogLevel::Debug).toString() \
         + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t"+ rocket::formatString(str, ##__VA_ARGS__)+"\n"); \
         rocket::Logger::GetGloballLogger()->log(); \
     } \
@@ -36,7 +36,7 @@ std::string  formatString(const char* str, Args&&... args) //第一个参数是�
 #define INFOLOG(str, ...) \
     if (rocket::Logger::GetGloballLogger()->getLoglevel() <= rocket::Info) \
     { \
-        rocket::Logger::GetGloballLogger()->pushLog((new rocket::LogEvent(rocket::LogLevel::Info))->toString() \
+        rocket::Logger::GetGloballLogger()->pushLog(rocket::LogEvent(rocket::LogLevel::Info).toString() \
         + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" + rocket::formatString(str, ##__VA_ARGS__)+"\n"); \
         rocket::Logger::GetGloballLogger()->log(); \
     } \
@@ -44,7 +44,7 @@ std::string  formatString(const char* str, Args&&... args) //第一个参数是�
 #define ERRORLOG(str, ...) \
     if (rocket::Logger::GetGloballLogger()->getLoglevel() <= rocket::Error) \
     { \
-        rocket::Logger::GetGloballLogger()->pushLog((new rocket::LogEvent(rocket::LogLevel::Error))->toString() \
+        rocket::Logger::GetGloballLogger()->pushLog(rocket::LogEvent(rocket::LogLevel::Error).toString() \
         + "[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "]\t" + rocket::formatString(str, ##__VA_ARGS__)+"\n"); \
         rocket::Logger::GetGloballLogger()->log(); \
     } \

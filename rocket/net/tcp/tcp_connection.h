@@ -5,6 +5,7 @@
 #include "rocket/net/tcp/tcp_buffer.h"
 #include "rocket/net/io_thread.h"
 #include <memory>
+#include "rocket/net/eventloop.h"
 
 namespace rocket{
 
@@ -15,13 +16,19 @@ namespace rocket{
         HalfClosing = 3,  //半连接  半关闭状态
         Closed = 4,  //关闭
     };
+
+    enum TcpConnectionType{
+        TcpConnectionByServer = 1,  //作为服务端使用，代表跟客户端的连接
+        TcpConnectionByClient = 2, //作为客户端使用，代表跟服务端的连接
+    };
+
     class TcpConnection
     {
     public:
         typedef std::shared_ptr<TcpConnection> s_ptr;
     private:
         /* data */
-        IOThread* m_io_thread {NULL}; //代表持有该连接的 IO线程
+        EventLoop* m_event_loop {NULL}; //代表持有该连接的 IO线程
 
         NetAddr::s_ptr m_local_addr;  //本地地址
         NetAddr::s_ptr m_peer_addr; //对端地址
@@ -38,8 +45,10 @@ namespace rocket{
         TcpState m_state; //当前连接的状态
 
         int m_fd {0};
+
+        TcpConnectionType m_connection_type {TcpConnectionByServer};
     public:
-        TcpConnection(IOThread* io_thread,int fd,int buffer_size,NetAddr::s_ptr peer_addr);
+        TcpConnection(EventLoop* event_loop,int fd,int buffer_size,NetAddr::s_ptr peer_addr);
         ~TcpConnection();
 
         void onRead();
@@ -55,6 +64,8 @@ namespace rocket{
         void clear(); //处理关闭事件
 
         void shutdown(); //f服务器主动关闭连接
+    public:
+        void setConnectionType(TcpConnectionType type);
     };
         
 }
