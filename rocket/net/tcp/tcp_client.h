@@ -4,7 +4,7 @@
 #include "rocket/net/tcp/tcp_connection.h"
 #include "rocket/net/eventloop.h"
 #include "rocket/net/tcp/net_addr.h"
-#include "rocket/net/tcp/abstract_protocol.h"
+#include "rocket/net/abstract_protocol.h"
 
 namespace rocket{
 
@@ -31,7 +31,7 @@ namespace rocket{
 
         //异步的读取Message
         //如果读取message成功，会调用done函数，函数入参就是message对象
-        void readMessage(AbstractProtocol::s_ptr message, std::function<void(AbstractProtocol::s_ptr)> done);
+        void readMessage(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> done);
     };
         
 }

@@ -12,7 +12,7 @@ namespace rocket{
     {
     private:
         /* data */
-        std::multimap<int64_t, TimerEvent::s_ptr> m_pending_events;
+        std::multimap<int64_t, TimerEvent::s_ptr> m_pending_events; //需要处理的定时任务事件
         Mutex m_mutex;
     
     private:

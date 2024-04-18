@@ -139,7 +139,7 @@ namespace rocket{
         }
     }
 
-    void Timer::resetArriveTime() //重新设置fd的达到时间
+    void Timer::resetArriveTime() //重新设置fd的达到时间  重新设置fd的间隔时间，即经过多少时间后触发fd的可读时间，一般设置为马上将要到达的事件的时间
     {   //加锁
         ScopeMutext<Mutex> lock(m_mutex);
         auto tmp = m_pending_events;
@@ -170,7 +170,7 @@ namespace rocket{
         memset(&value,0,sizeof(value));
         value.it_value = ts;
 
-        int rt = timerfd_settime(m_fd,0,&value,NULL);
+        int rt = timerfd_settime(m_fd,0,&value,NULL);  //用于启动指定fd的定时器   将value设置为超时时间，当经过value时间后，会触发fd的可读事件
 
         
         if(rt != 0)

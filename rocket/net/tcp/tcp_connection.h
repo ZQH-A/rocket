@@ -6,6 +6,9 @@
 #include "rocket/net/io_thread.h"
 #include <memory>
 #include "rocket/net/eventloop.h"
+#include <queue> 
+#include "rocket/net/abstract_protocol.h"
+#include "rocket/net/abstract_coder.h"
 
 namespace rocket{
 
@@ -47,8 +50,17 @@ namespace rocket{
         int m_fd {0};
 
         TcpConnectionType m_connection_type {TcpConnectionByServer};
+
+        //存储写事件的回调函数  
+        //1.为什么要用pair，且有个参数是AbstractProtocol::s_ptr，因为回调函数中的参数是这个，所以需要一直保存这个参数，直到调用的时候
+        //而需要保存两个相对应的参数，所以使用pair
+        std::vector<std::pair<AbstractProtocol::s_ptr,std::function<void(AbstractProtocol::s_ptr)>>> m_write_dones;
+
+        std::map<std::string,std::function<void(AbstractProtocol::s_ptr)>> m_read_dones;
+
+        AbstractCoder* m_coder {NULL}; 
     public:
-        TcpConnection(EventLoop* event_loop,int fd,int buffer_size,NetAddr::s_ptr peer_addr);
+        TcpConnection(EventLoop* event_loop,int fd,int buffer_size,NetAddr::s_ptr peer_addr, TcpConnectionType type = TcpConnectionByServer);
         ~TcpConnection();
 
         void onRead();
@@ -66,6 +78,14 @@ namespace rocket{
         void shutdown(); //f服务器主动关闭连接
     public:
         void setConnectionType(TcpConnectionType type);
+        //监听可写事件
+        void listenWrite();
+        //监听可读事件
+        void listenRead();
+
+        void pushSendMessage(AbstractProtocol::s_ptr message, std::function<void(AbstractProtocol::s_ptr)> done);
+
+        void pushReadMessage(const std::string& req_id, std::function<void(AbstractProtocol::s_ptr)> done);
     };
         
 }

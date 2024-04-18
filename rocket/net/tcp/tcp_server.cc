@@ -31,7 +31,7 @@ namespace rocket{
 
      void TcpServer::init() //初始化
      {
-        m_acceptor = std::make_shared<TcpAcceptor>(m_local_addr);
+        m_acceptor = std::make_shared<TcpAcceptor>(m_local_addr);//创建套接字 绑定 监听
 
         m_main_event_loop = EventLoop::GetGurrentEventLoop(); //获取主线程的eventloop
         m_io_thread_group = new IOThreadGroup(2);        //还需要给它里面的iothread中的eventloop添加eventfd进行监听
@@ -39,7 +39,7 @@ namespace rocket{
         //将监听套接字上树，并绑定其对应的触发函数。
         m_listen_fd_event =  new FdEvent(m_acceptor->getListenFd());
 
-        m_listen_fd_event->listen(FdEvent::IN_EVENT,std::bind(&TcpServer::onAccept,this));
+        m_listen_fd_event->listen(FdEvent::IN_EVENT,std::bind(&TcpServer::onAccept,this));//主线程的套接字，用于接收到来的链接
         m_main_event_loop->addEpollEvent(m_listen_fd_event);
      }
 
@@ -57,6 +57,6 @@ namespace rocket{
         IOThread* io_thread = m_io_thread_group->getIOThread();
         TcpConnection::s_ptr connection = std::make_shared<TcpConnection>(io_thread->getEventLoop(),client_fd,128,peer_addr);
         connection->setState(Connected);
-        m_client.insert(connection);
+        m_client.insert(connection); //保存的Connection链接
      }
 }

@@ -91,7 +91,7 @@ namespace rocket{
         }
     }
 
-    void EventLoop::initWakeUpFdEvent()
+    void EventLoop::initWakeUpFdEvent() //创建一个文件描述符，获得其对应的Fd_event然后监听可读事件并上树 
     {
         //当有事件来临时，就会马上唤醒处理epoll_wait
         m_wakeup_fd = eventfd(0, EFD_NONBLOCK);   //专门用于事件通知的文件描述符
@@ -143,8 +143,8 @@ namespace rocket{
                 }
              }
 
-             //如果由定时任务需要执行，那么执行
-             //1.怎么判断是否需要执行
+             //如果有定时任务需要执行，那么执行
+             //1.怎么判断是否需要执行  当定时任务所设定的时间到达时，就会触发其可读事件，然后就会执行其回调函数
              //2.怎么去监听
             
 

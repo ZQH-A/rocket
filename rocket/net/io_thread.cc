@@ -40,7 +40,7 @@ namespace rocket{
     {
         IOThread* thread = static_cast<IOThread*> (arg);
 
-        thread->m_event_loop = new EventLoop();
+        thread->m_event_loop = new EventLoop(); //这里为什么不用GetGurrentEventLoop获取当前线程的对象呢 好像是一样的都要重新创建一个新的对象
         thread->m_thread_id = getThreadId();
 
         //唤醒等待的线程 
