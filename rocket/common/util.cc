@@ -3,6 +3,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <arpa/inet.h>
+#include <string.h>
 
 namespace rocket{
     static int g_pid = 0;
@@ -32,5 +34,14 @@ namespace rocket{
         gettimeofday(&val,NULL);
 
         return val.tv_sec *1000 + val.tv_usec / 1000;
+    }
+
+
+    int32_t getInt32FromNetByte(const char* buf) //将网络字节序转换为一个Int型
+    {
+        int32_t re;
+        memcpy(&re,buf,sizeof(re));  //读取了四个字节
+
+        return ntohl(re); //将网络字节序转为主机字节序
     }
 }

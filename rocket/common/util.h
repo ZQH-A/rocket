@@ -10,6 +10,8 @@ namespace rocket{
     pid_t getThreadId(); //获取线程号
 
     int64_t getNowMs(); //获取当前时间的毫秒数
+
+    int32_t getInt32FromNetByte(const char* buf); //将网络字节序转换为一个Int型
 }
 
 

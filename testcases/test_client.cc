@@ -7,8 +7,10 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include "rocket/net/tcp/tcp_client.h"
-#include "rocket/net/string_coder.h"
-#include "rocket/net/abstract_protocol.h"
+#include "rocket/net/coder/string_coder.h"
+#include "rocket/net/coder/abstract_protocol.h"
+#include "rocket/net/coder/tinypb_coder.h"
+#include "rocket/net/coder/tinypb_protocol.h"
 
 void test_connect()
 {
@@ -51,20 +53,17 @@ void test_tcp_client()
     client.connect([addr,&client]()
     {
         DEBUGLOG("connect success, addr = %s",addr->toString().c_str());
-        std::shared_ptr<rocket::StringProtocol> message = std::make_shared<rocket::StringProtocol>();
+        std::shared_ptr<rocket::TinyPBProtocol> message = std::make_shared<rocket::TinyPBProtocol>();
 
-        message->info = "hello rocket";
-        message->setReqId("12345");
+        message->m_pb_data = "test pb data";
+        message->m_req_id= "123456789";
         client.writeMessage(message,[](rocket::AbstractProtocol::s_ptr msg_prt){ //有对可写事件的监听 有关闭
             DEBUGLOG("send message success");
         });
-        client.readMessage("12345",[](rocket::AbstractProtocol::s_ptr msg_prt){ //有对读事件的监听 无关闭
-            std::shared_ptr<rocket::StringProtocol> message = std::dynamic_pointer_cast<rocket::StringProtocol>( msg_prt);
+        client.readMessage("123456789",[](rocket::AbstractProtocol::s_ptr msg_prt){ //有对读事件的监听 无关闭
+            std::shared_ptr<rocket::TinyPBProtocol> message = std::dynamic_pointer_cast<rocket::TinyPBProtocol>( msg_prt);
 
-            DEBUGLOG("req_id [%s],get response %s",message->getReqId().c_str(),message->info.c_str());
-        });
-        client.writeMessage(message,[](rocket::AbstractProtocol::s_ptr msg_prt){
-            DEBUGLOG("send message 2222 success");
+            DEBUGLOG("req_id [%s],get pb data [%s]",message->m_req_id.c_str(),message->m_pb_data.c_str());
         });
     });
 }
