@@ -20,7 +20,7 @@ namespace rocket{
 
         m_fd_event = FdEventGroup::GetFdEventGroup()->getFdEvent(m_fd); //获得套接字对应的fdevent对象
 
-        m_connection = std::make_shared<TcpConnection>(m_event_loop,m_fd,128,peer_addr,TcpConnectionByClient); //创建TcpConnection对象
+        m_connection = std::make_shared<TcpConnection>(m_event_loop,m_fd,128,peer_addr,nullptr,TcpConnectionByClient); //创建TcpConnection对象
         m_connection->setConnectionType(TcpConnectionByClient);
     }
     TcpClient::~TcpClient()

@@ -13,8 +13,6 @@ namespace rocket{
 
         ~WakeUpFdEvent();
 
-        void init();
-
         void wakeup();
         private:
 

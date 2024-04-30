@@ -9,6 +9,7 @@
 #include <queue> 
 #include "rocket/net/coder/abstract_protocol.h"
 #include "rocket/net/coder/abstract_coder.h"
+#include "rocket/net/rpc/rpc_dispatcher.h"
 
 namespace rocket{
 
@@ -39,8 +40,8 @@ namespace rocket{
         //知道为什么要有一个读指针 一个写指针了，在接收缓冲区中，先使用系统调用write把接收到的数据写到接收缓冲区中
         //然后在使用readFromBuffer从buffer里面读。 发送缓冲区同理，先使用writeToBuffer写入数据到buffer，然后
         //使用read从buffer里面读取数据然后发送到对端。
-        TcpBuffer::s_ptr  m_in_buffer; //接收缓冲区 
-        TcpBuffer::s_ptr  m_out_buffer; //发送缓冲区
+        TcpBuffer::s_ptr  m_in_buffer {NULL}; //接收缓冲区 
+        TcpBuffer::s_ptr  m_out_buffer {NULL}; //发送缓冲区
 
         
         FdEvent* m_fd_event {NULL};
@@ -59,8 +60,10 @@ namespace rocket{
         std::map<std::string,std::function<void(AbstractProtocol::s_ptr)>> m_read_dones;
 
         AbstractCoder* m_coder {NULL}; 
+
+        std::shared_ptr<RpcDispatcher> m_dispatcher;
     public:
-        TcpConnection(EventLoop* event_loop,int fd,int buffer_size,NetAddr::s_ptr peer_addr, TcpConnectionType type = TcpConnectionByServer);
+        TcpConnection(EventLoop* event_loop,int fd,int buffer_size,NetAddr::s_ptr peer_addr,NetAddr::s_ptr local_addr,TcpConnectionType type = TcpConnectionByServer);
         ~TcpConnection();
 
         void onRead();
@@ -76,6 +79,10 @@ namespace rocket{
         void clear(); //处理关闭事件
 
         void shutdown(); //f服务器主动关闭连接
+
+        NetAddr::s_ptr getLocalAddr();
+
+        NetAddr::s_ptr getPeerAddr();
     public:
         void setConnectionType(TcpConnectionType type);
         //监听可写事件
