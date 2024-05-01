@@ -13,7 +13,7 @@ namespace rocket{
     public:
         /* data */
         int32_t m_pb_len {0}; //整包长度
-        int32_t m_req_id_len {0};// req_id 继承于父类 req_id的长度
+        int32_t m_msg_id_len {0};// msg_id 继承于父类 msg_id的长度
 
         int32_t m_method_name_len{0};  //方法名长度
         std::string m_method_name;  //方法名

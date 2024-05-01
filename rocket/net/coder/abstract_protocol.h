@@ -13,20 +13,20 @@ namespace rocket{
     public:
         typedef std::shared_ptr<AbstractProtocol> s_ptr;
 
-        // std::string getReqId(){
-        //     return m_req_id;
+        // std::string getMsgId(){
+        //     return m_msg_id;
         // }
 
-        // void setReqId(const std::string req_id)
+        // void setMsgId(const std::string msg_id)
         // {
-        //     m_req_id = req_id;
+        //     m_msg_id = msg_id;
         // }
 
         //虚析构函数
         virtual ~AbstractProtocol(){}
         AbstractProtocol(){}
     public:
-        std::string m_req_id; //请求号，唯一表示一个请求或者响应
+        std::string m_msg_id; //请求号，唯一表示一个请求或者响应
     };
         
 }

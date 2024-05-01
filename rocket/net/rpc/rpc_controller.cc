@@ -5,7 +5,7 @@ namespace rocket{
     {
         m_error_code = 0;
         m_error_info = "";
-        m_req_id = "";
+        m_msg_id = "";
 
         m_is_failed = false;
         m_is_cancled = false;
@@ -45,6 +45,7 @@ namespace rocket{
     {
         m_error_code = error_code;
         m_error_info = error_info;
+        m_is_failed = true;
     }
 
     int32_t RpcController::GetErrorCode()
@@ -57,14 +58,14 @@ namespace rocket{
         return m_error_info;
     }
 
-    void RpcController::SetReqId(const std::string& req_id)
+    void RpcController::SetMsgId(const std::string& msg_id)
     {
-        m_req_id = req_id;
+        m_msg_id = msg_id;
     }
 
-    std::string RpcController::GetReqId()
+    std::string RpcController::GetMsgId()
     {
-        return m_req_id;
+        return m_msg_id;
     }
 
     void RpcController::SetLocalAddr(NetAddr::s_ptr addr)

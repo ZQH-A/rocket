@@ -136,3 +136,4 @@ TcpClient：有以下步骤： 1. Connect:连接对端机器 2.Write：将RPC响
 5.将response对象序列化为pb_data，在塞入到TinyPBProtocol结构体中，然后encode塞入到buffer里面，就会发送回包
 
 ## RpcChannel 用于客户端跟服务端通信
+
