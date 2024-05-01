@@ -123,3 +123,16 @@ TcpClient：有以下步骤： 1. Connect:连接对端机器 2.Write：将RPC响
 （1）为了方便分割请求，因为protobuf后的结果是一串无意义的字节流，你无法区分哪里是开始或是结束。比如说两个Message对象序列化后的结果排在一起，你甚至无法分开这两个请求。在tcp传输是按照字节流传输，没有包的概念，因此应用层就更无法区分了。
 （2）为了定位：加上MsgID等信息，能帮助我们匹配一次RPC的请求和响应，不会串包
 （3）错误提升：加上错误信息，能很容易知道RPC失败的原因，方便问题定位。
+
+
+## rpc服务端流程
+![alt text](image.png)
+流程：
+启动时就注册OrderService对象
+1.从buffer中读取数据，然后decode得到请求的TinyPBProtocol，然后从TinyPBProtocol中得到method_name，从OrderService对象里根据service.method_name找到func
+2.找到对应的request type 以及 response type
+3.将请求体TinyPBProtocol里面的pb_data反序列化为request type的一个对象，声明一个空的response type对象。
+4.func(request,response)
+5.将response对象序列化为pb_data，在塞入到TinyPBProtocol结构体中，然后encode塞入到buffer里面，就会发送回包
+
+## RpcChannel 用于客户端跟服务端通信

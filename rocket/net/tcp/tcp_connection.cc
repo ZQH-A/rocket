@@ -24,7 +24,6 @@ namespace rocket{
         if(m_connection_type == TcpConnectionByServer)
         {
             //监听可读事件
-            m_dispatcher = std::make_shared<RpcDispatcher>();
             listenRead();
             DEBUGLOG("TcpConnection...................");
         }
@@ -130,7 +129,7 @@ namespace rocket{
                 std::shared_ptr<TinyPBProtocol> message = std::make_shared<TinyPBProtocol>();
                 //message->m_pb_data = "hello. this is rocket rpc test data";
                 //message->m_req_id = result[i]->m_req_id;
-                m_dispatcher->dispatch(result[i],message,this);
+                RpcDispatcher::GetRpcDispatcher()->dispatch(result[i],message,this);
                 replay_message.emplace_back(message);
 
             }

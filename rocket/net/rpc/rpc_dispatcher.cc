@@ -10,6 +10,17 @@
 
 namespace rocket
 {
+    static RpcDispatcher* g_rpc_dispatcher = NULL;
+
+    RpcDispatcher* RpcDispatcher::GetRpcDispatcher()
+    {
+        if(g_rpc_dispatcher != NULL)
+        {
+            return g_rpc_dispatcher;
+        }
+        g_rpc_dispatcher = new RpcDispatcher();
+        return g_rpc_dispatcher;
+    }
 
     void RpcDispatcher::dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::s_ptr response,TcpConnection* connection)
     {

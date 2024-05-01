@@ -18,6 +18,11 @@ namespace rocket{
     private:
         /* data */
     public:
+
+        static RpcDispatcher* GetRpcDispatcher();
+    
+    public:
+    
         typedef std::shared_ptr<google::protobuf::Service> service_s_ptr;
 
         void dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::s_ptr response, TcpConnection* connection);
