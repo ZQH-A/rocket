@@ -13,13 +13,15 @@ namespace rocket
         /* data */
         std::function<void()> m_cb {nullptr};
     public:
-       void Run() override
-       {
-            if(m_cb !=nullptr)
-            {
-                m_cb();
-            }
-       }
+
+        RpcClosure(std::function<void()> cb) : m_cb(cb) {}
+        void Run() override
+        {
+                if(m_cb !=nullptr)
+                {
+                    m_cb();
+                }
+        }
     };
 
 } // namespace rocket

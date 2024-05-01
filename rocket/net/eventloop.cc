@@ -194,6 +194,7 @@ namespace rocket{
     void EventLoop::stop() //终止函数
     {
         m_stop_flag = true;
+        wakeup();
     }
 
     void EventLoop::dealWakeup()

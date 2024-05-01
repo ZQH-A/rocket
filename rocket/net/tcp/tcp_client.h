@@ -5,6 +5,7 @@
 #include "rocket/net/eventloop.h"
 #include "rocket/net/tcp/net_addr.h"
 #include "rocket/net/coder/abstract_protocol.h"
+#include <memory>
 
 namespace rocket{
 
@@ -20,6 +21,8 @@ namespace rocket{
 
         TcpConnection::s_ptr m_connection;
     public:
+        typedef std::shared_ptr<TcpClient> s_ptr;
+    public:
         TcpClient(NetAddr::s_ptr peer_addr);
         ~TcpClient();
         //如果connect成功，done会被执行
@@ -32,6 +35,8 @@ namespace rocket{
         //异步的读取Message
         //如果读取message成功，会调用done函数，函数入参就是message对象
         void readMessage(const std::string& msg_id, std::function<void(AbstractProtocol::s_ptr)> done);
+
+        void stop(); //结束eventloop循环
     };
         
 }

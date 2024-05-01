@@ -98,4 +98,12 @@ namespace rocket{
         m_connection->pushReadMessage(msg_id,done);
         m_connection->listenRead();
     }
+
+    void TcpClient::stop() //结束eventloop循环
+    {
+        if(m_event_loop->isLooping())
+        {
+            m_event_loop->stop();
+        }
+    }
 }
