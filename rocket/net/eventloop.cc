@@ -180,7 +180,25 @@ namespace rocket{
                         DEBUGLOG("fd %d trigger EPOLLOUT event",fd_event->getFd());
                         addTask(fd_event->hander(FdEvent::OUT_EVENT));
                     }
+                    //既没有可读时间也没有可写事件
+                    // if(!( trigger_event.events & EPOLLIN) && !(trigger_event.events & EPOLLOUT))
+                    // {
+                    //     DEBUGLOG("unkonow event");
+                    // }
+                    //常用于客户端， 当服务端没有监听时，客户端套接字会触发EPOLLERR事件
+                    //如果没有处理，则又会触发epoll_wait导致死循环
 
+                    if(trigger_event.events & EPOLLERR)
+                    {
+                        int event = (int)(trigger_event.events);
+                        DEBUGLOG("unkonow event = %d",event);
+                        deleteEpollEvent(fd_event);
+                        DEBUGLOG("fd %d trigger EPOLLERR event",fd_event->getFd());
+                        if(fd_event->hander(FdEvent::ERR_EVENT) != nullptr)
+                        {
+                            addTask(fd_event->hander(FdEvent::ERR_EVENT));
+                        }
+                    }
                 }
             }
         }

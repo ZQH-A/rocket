@@ -11,7 +11,8 @@ namespace rocket{
 
         enum TriggerEvent {
             IN_EVENT = EPOLLIN,
-            OUT_EVENT = EPOLLOUT
+            OUT_EVENT = EPOLLOUT,
+            ERR_EVENT = EPOLLERR,
         };
 
         FdEvent(int fd);
@@ -22,7 +23,7 @@ namespace rocket{
 
         std::function<void()> hander(TriggerEvent event_type);
 
-        void listen(TriggerEvent event_type, std::function<void()> callback);
+        void listen(TriggerEvent event_type, std::function<void()> callback, std::function<void()> error_callback = nullptr);
 
         int getFd() const {
             return m_fd;
@@ -37,15 +38,15 @@ namespace rocket{
             return m_listen_events;
         }
 
-        
 
         protected:
         int m_fd {-1};  //监听的文件描述符
 
         epoll_event m_listen_events; //监听的事件
 
-        std::function<void()> m_read_callback;  //读回调函数
-        std::function<void()> m_write_callback; //写回调函数
+        std::function<void()> m_read_callback {nullptr};  //读回调函数
+        std::function<void()> m_write_callback {nullptr}; //写回调函数
+        std::function<void()> m_error_callback {nullptr}; //
     };
 }
 

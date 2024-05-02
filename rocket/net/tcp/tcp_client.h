@@ -14,12 +14,17 @@ namespace rocket{
     private:
         /* data */
         NetAddr::s_ptr m_peer_addr;
+        NetAddr::s_ptr m_local_addr;
+
         EventLoop* m_event_loop {NULL};
 
         int m_fd {-1};
         FdEvent* m_fd_event {NULL};
 
         TcpConnection::s_ptr m_connection;
+
+        int m_connect_errcode {0}; //连接失败错误码
+        std::string m_connect_error_info; //连接失败错误信息
     public:
         typedef std::shared_ptr<TcpClient> s_ptr;
     public:
@@ -37,6 +42,15 @@ namespace rocket{
         void readMessage(const std::string& msg_id, std::function<void(AbstractProtocol::s_ptr)> done);
 
         void stop(); //结束eventloop循环
+
+        int getConnectErrorCode();
+        std::string getConnectErrorInfo();
+
+        NetAddr::s_ptr getPeerAddr();
+
+        NetAddr::s_ptr getLocalAddr();
+
+        void initLocalAddr();
     };
         
 }
