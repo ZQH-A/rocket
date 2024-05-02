@@ -25,6 +25,10 @@ public:
                        ::makeOrderResponse* response,
                        ::google::protobuf::Closure* done)
                        {
+                            DEBUGLOG("start sleeo 5s");
+                            sleep(5);
+                            DEBUGLOG("end sleeo 5s");
+                            
                             if(request->price() < 10)
                             {
                                 response->set_ret_code(-1);

@@ -6,6 +6,7 @@
 #include "rocket/net/tcp/net_addr.h"
 #include "rocket/net/coder/abstract_protocol.h"
 #include <memory>
+#include "rocket/net/timer_event.h"
 
 namespace rocket{
 
@@ -51,6 +52,9 @@ namespace rocket{
         NetAddr::s_ptr getLocalAddr();
 
         void initLocalAddr();
+
+        void addTimerEvent(TimerEvent::s_ptr timer_event);
+
     };
         
 }
