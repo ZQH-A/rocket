@@ -7,6 +7,7 @@
 #include "rocket/net/rpc/rpc_controller.h"
 #include "rocket/net/tcp/net_addr.h"
 #include "rocket/net/tcp/tcp_connection.h"
+#include "rocket/common/run_time.h"
 
 namespace rocket
 {
@@ -21,12 +22,13 @@ namespace rocket
         g_rpc_dispatcher = new RpcDispatcher();
         return g_rpc_dispatcher;
     }
-
+    //请求的消息   返回的消息
     void RpcDispatcher::dispatch(AbstractProtocol::s_ptr request, AbstractProtocol::s_ptr response,TcpConnection* connection)
     {
         std::shared_ptr<TinyPBProtocol> req_protocol = std::dynamic_pointer_cast<TinyPBProtocol>(request);
         std::shared_ptr<TinyPBProtocol> rsp_protocol = std::dynamic_pointer_cast<TinyPBProtocol>(response);
-        std::string method_full_name = req_protocol->m_method_name;
+
+        std::string method_full_name = req_protocol->m_method_name;  //客户端请求执行的 服务名.方法名
         std::string service_name;
         std::string method_name;
 
@@ -39,7 +41,7 @@ namespace rocket
             return;
         }
 
-        auto it = m_service_map.find(service_name);
+        auto it = m_service_map.find(service_name); //找服务名
         if(it == m_service_map.end()) //未找到service
         { //todo 后面补充出错处理
             ERRORLOG("%s | service name [%s] not found",rsp_protocol->m_msg_id,service_name.c_str());
@@ -80,6 +82,11 @@ namespace rocket
         rpcController.SetLocalAddr(connection->getLocalAddr());
         rpcController.SetPeerAddr(connection->getPeerAddr());
         rpcController.SetMsgId(req_protocol->m_msg_id);
+        
+        //用于APPLog的信息打印
+        RunTime::GetRunTime()->m_msgid = req_protocol->m_msg_id;
+        RunTime::GetRunTime()->m_method_name = method_name;
+
         //为什么要用controller, 在调用业务方法的时候，通过controller拿到rpc上的一些信息，比如本次调用的地址，这样可以用于后续的调试。
         service->CallMethod(method,&rpcController,req_msg,rsp_msg,NULL);
 

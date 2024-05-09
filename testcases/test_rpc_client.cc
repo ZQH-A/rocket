@@ -38,10 +38,11 @@ void test_tcp_client()
         }
         message->m_method_name = "Order.makeOrder";
 
+        //将TinyPBProtocol协议结构体编码为字节流，并写入到buffer中，并绑定对套接字对可写事件的监听
         client.writeMessage(message,[request](rocket::AbstractProtocol::s_ptr msg_prt){ //有对可写事件的监听 有关闭
             DEBUGLOG("send message success,request[%s]",request.ShortDebugString().c_str());
         });
-
+        //先是绑定对读事件的监听，然后解码buffer中全部的TinyPBProtocol协议结构体，并找到msg_id为123456789的结构体，然后在回调函数中对其中的m_pb_data字段进行反序列化进行解析
         client.readMessage("123456789",[](rocket::AbstractProtocol::s_ptr msg_prt){ //有对读事件的监听 无关闭
             std::shared_ptr<rocket::TinyPBProtocol> message = std::dynamic_pointer_cast<rocket::TinyPBProtocol>( msg_prt);
 
@@ -98,7 +99,7 @@ void test_rpc_channel()
         }
         
         INFOLOG("now exit eventloop");
-        channel->getTcpClient()->stop();
+        //channel->getTcpClient()->stop();
         channel.reset();
     });
 
@@ -108,7 +109,7 @@ void test_rpc_channel()
 
     //Order_Stub stub(channel.get());
 
-    //stub.makeOrder(controller.get(),request.get(),response.get(),closure.get());
+    //stub.makeOrder(controller.get(),request.get(),response.get(),closure.get());  //stub.makeOrder()方法会调用到channel的callmethod()方法
     CALLRPC("127.0.0.1:12345",makeOrder,controller,request,response,closure);
 }
 
@@ -116,11 +117,9 @@ int main()
 {
 
     //初始化读取配置的类
-    rocket::Config::setGlobalConfig("../conf/rocket.xml");
+    rocket::Config::setGlobalConfig(NULL);
     //初始化Logger类
-    rocket::Logger::setGloballLogger();
-
-    
+    rocket::Logger::setGloballLogger(0);
 
     test_rpc_channel();
 }

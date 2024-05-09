@@ -34,7 +34,7 @@ namespace rocket{
         m_acceptor = std::make_shared<TcpAcceptor>(m_local_addr);//创建套接字 绑定 监听
 
         m_main_event_loop = EventLoop::GetGurrentEventLoop(); //获取主线程的eventloop
-        m_io_thread_group = new IOThreadGroup(2);        //还需要给它里面的iothread中的eventloop添加eventfd进行监听
+        m_io_thread_group = new IOThreadGroup(rocket::Config::GetGlobalConfig()->get_io_threads());        //还需要给它里面的iothread中的eventloop添加eventfd进行监听
 
         //将监听套接字上树，并绑定其对应的触发函数。
         m_listen_fd_event =  new FdEvent(m_acceptor->getListenFd());

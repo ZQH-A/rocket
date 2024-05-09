@@ -47,7 +47,9 @@ namespace rocket{
     };
 
     class Mutex{ //封装了一个互斥锁
+
         public:
+
         Mutex(){
             //对互斥锁进行初始化
             pthread_mutex_init(&m_mutex,NULL);
@@ -67,7 +69,14 @@ namespace rocket{
             //释放锁
             pthread_mutex_unlock(&m_mutex);
         }
+
+        pthread_mutex_t* getMutex()
+        {
+            return &m_mutex;
+        }
+
         private:
+
         pthread_mutex_t m_mutex;
     };
 }

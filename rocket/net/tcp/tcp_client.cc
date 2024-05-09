@@ -38,7 +38,7 @@ namespace rocket{
 
         if(rt ==0)
         {
-            DEBUGLOG("connect [%s] success",m_peer_addr->toString().c_str());
+            DEBUGLOG("rt [%d] connect [%s] success",rt,m_peer_addr->toString().c_str());
             initLocalAddr();
             m_connection->setState(Connected);
             if(done)
@@ -101,7 +101,7 @@ namespace rocket{
 
                 m_event_loop->addEpollEvent(m_fd_event); //将fdevent的可写事件上树
 
-                if(!m_event_loop->isLooping())
+                if(!m_event_loop->isLooping()) //开启eventloop循环
                 {
                     m_event_loop->loop();
                 }

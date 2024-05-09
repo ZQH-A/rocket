@@ -120,9 +120,11 @@ namespace rocket{
         {
             //1.针对每一个请求，调用rpc方法，获取响应的message
             //2.将响应的message放入到发送缓冲区，监听可写事件回包
-            std::vector<AbstractProtocol::s_ptr> result;
-            std::vector<AbstractProtocol::s_ptr> replay_message;
+            std::vector<AbstractProtocol::s_ptr> result;  //服务器读取的结构体
+            std::vector<AbstractProtocol::s_ptr> replay_message;  //服务器返回的结构体
+
             m_coder->decode(result,m_in_buffer);
+
             for(size_t i =0; i<result.size(); ++i)
             {
                 INFOLOG("success get request [%s] from client [%s]",result[i]->m_msg_id.c_str(),m_peer_addr->toString().c_str());

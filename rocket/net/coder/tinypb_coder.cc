@@ -31,7 +31,7 @@ namespace rocket{
         }
     }
 
-        //将buffer里面的字节流转化为 message对象
+        //将buffer里面的字节流转化为message对象
     void TinyPBCoder::decode(std::vector<AbstractProtocol::s_ptr>& messages,TcpBuffer::s_ptr in_buffer)
     { //遍历buffer 找到PB_START，找到之后，解析出整包的长度，然后得到结束符的位置，判断是否为PB_END， 
       //如果不为PB_END说明整个包没有在buffer里面
@@ -46,14 +46,14 @@ namespace rocket{
             
             bool parse_success = false; //判断是否解析成功
             int i;
-            for(i = start_index; i<in_buffer->writeIndex(); ++i)
+            for(i = start_index; i<in_buffer->writeIndex(); ++i)  //找PB_START
             {
                 if(tmp[i] == TinyPBProtocol::PB_START) //检测到开始符
                 {
 
                     if(i+1 < in_buffer->writeIndex())
                     {                    
-                        pk_len = getInt32FromNetByte(&tmp[i+1]); //感觉就只用了一个char字符
+                        pk_len = getInt32FromNetByte(&tmp[i+1]); //函数里面用了四个字符
                         DEBUGLOG("get pk_len = %d", pk_len);
 
                         //结束符索引
@@ -80,7 +80,7 @@ namespace rocket{
 
             if(parse_success)
             {
-                in_buffer->moveReadIndex(end_index-start_index+1);
+                in_buffer->moveReadIndex(end_index-start_index+1); //往后以后 表名已经读取了数据
                 std::shared_ptr<TinyPBProtocol> message = std::make_shared<TinyPBProtocol>();
 
                 message->m_pb_len = pk_len;

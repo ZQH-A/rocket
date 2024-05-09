@@ -25,9 +25,9 @@ public:
                        ::makeOrderResponse* response,
                        ::google::protobuf::Closure* done)
                        {
-                            DEBUGLOG("start sleeo 5s");
+                            APPDEBUGLOG("start sleeo 5s");
                             sleep(5);
-                            DEBUGLOG("end sleeo 5s");
+                            APPDEBUGLOG("end sleeo 5s");
                             
                             if(request->price() < 10)
                             {
@@ -48,21 +48,33 @@ void test_tcp_server()
 
     rocket::TcpServer tcp_server(addr);
 
-    
-
     tcp_server.start();
 }
-int main()
+int main(int argc, char* argv [])
 {
+    if(argc != 2)
+    {
+        printf("start test_rpc_server error, argc not 2 \n");
+        printf("start like this: \n");
+        printf("./test_rpc_server ../conf/rocket.xml \n");
+        return 0;
+    }
 
     //初始化读取配置的类
-    rocket::Config::setGlobalConfig("../conf/rocket.xml");
+    rocket::Config::setGlobalConfig(argv[1]);
     //初始化Logger类
     rocket::Logger::setGloballLogger();
 
     std::shared_ptr<OrderImpl> service = std::make_shared<OrderImpl>();
     rocket::RpcDispatcher::GetRpcDispatcher()->registerService(service);
-    test_tcp_server();
+
+    rocket::IPNetAddr::s_ptr addr= std::make_shared<rocket::IPNetAddr>("127.0.0.1",rocket::Config::GetGlobalConfig()->get_port());
+
+    rocket::TcpServer tcp_server(addr);
+
+    tcp_server.start();
+
+    //test_tcp_server();
 
     return 0;
 }
